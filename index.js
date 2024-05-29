@@ -1,70 +1,100 @@
-/**
- * This is a simple example of how you can import
- * the ollama sdk and work with that
- * import ollama from "https://esm.sh/ollama/browser"
- * add the code below to your buttons click event listener
- * const respone = await ollama.chat({messages: [{role: 'user', content: 'What is the capital of the United States?'}]});
- * console.log(response);
- */
-// ----------------------------
-/**
- * There might be another way. The platform val.town
- * allows free requests to openai api. https://www.val.town/v/std/openai
- * Limits are:
- * - Usage Quota: We limit each user to 10 requests per minute.
- * - Features: Chat completions is the only endpoint available.
- * - There is no streaming support
- *
- * This might be enough for our usecase.
- * Do make this easier @ff6347 wrote this simple wrapper class
- * that you can use to interact with val.town openai api
- * mimicing the ollama sdk.
- * It is an esm module so you need to include type="module" in your script tag
- * <script type="module" src="index.js"></script>
- */
+
 
 // import the wrapper class
 import { LLM } from './llm.js';
 
-// create an instance of the class
-// you need to insert the run url for your val.town openai api
-// @ff6347 will instruct you on how to get this
 
 const llm = new LLM({
-  host: '<insert run url for your val.town openai api here>',
+  host: 'https://anne2810-openai_api.web.val.run/',
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+  var aboutButton = document.getElementById("about");
+  var indexButton = document.getElementById("index");
+
+  if (aboutButton){
+    aboutButton.addEventListener("click", function() {
+      // Öffne eine neue Seite
+      window.location.href = "about.html";
+  });
+};
+
+ if(indexButton){
+  indexButton.addEventListener("click", function() {
+      // Öffne eine neue Seite
+      window.location.href = "index.html";
+  });
+}
+});
+
+
+let isGenerating = false;
+const form = document.querySelector('form');
+const submitButton = document.querySelector('form>button[type="submit"]');
+
+
+const messages = [
+  {
+    role: "system",
+    content: 'write a postcard',
+  },
+
+];
 // get the button#run element from the index.html
-const chatButton = document.getElementById('run');
 
-// add a click event listener to the button that runs the async function
-chatButton.addEventListener('click', async () => {
-  // some options for the chat
-  const format = 'json'; // we want json output
-  // we set the seed so we get always the same output
-  // we set the temperature which controls the creativity of the model
-  const options = {
-    seed: 42,
-    temperature: 0.5,
+submitButton.addEventListener('click', (event) => {
+  event.preventDefault();
+  const formData = new FormData(form);
+
+  const contentText= (formData.get("content"));
+  const nameText = (formData.get("name"));
+  const yourName = (formData.get("yourName"));
+
+  const currentMessage = {
+    role: 'user',
+    content: `write an event card from me named: ${yourName} for my friend named: ${nameText} and the card is about ${contentText}. do not give an front image. give me emojis. Give me diferent content. Do not write Event`,
   };
-  // the messages that we want to send to the model
-  // allowed are 'system', 'assistant' and 'user' role for the messages
-  const messages = [
-    {
-      role: 'system',
-      content:
-        'You are a helpful assistant. Always repond in JSON and only JSON',
-    },
-    { role: 'user', content: 'What is the capital of the United States?' },
-  ];
 
-  try {
-    // now we make the call to the api.
-    // we wrap it in a try catch block to catch any errors
-    const response = await llm.chat({ format, options, messages });
+  
+  isGenerating = true;
+
+  messages.push(currentMessage)
+llm.
+chat ({
+  options: {
+    temperature: 0.5,
+    seed: 42,
+  }, 
+  messages: messages
+  
+  })
+  .then((response) => {
+      isGenerating = false;
     console.log(response);
-  } catch (error) {
-    // we had an error lets handle it
-    console.error(error);
-  }
-});
+    console.log(messages);
+    messages.push(response.completion.choices[0].message);
+
+    const htmlContent = messages.map( item => {
+      if (item.role === 'system') {
+        return ''
+      }
+      if (item.role === 'assistant') {
+        return `<p><span class="role assistant">${item.role}: </span><span class="content">${item.content}</span></p>`
+      }
+      //if (item.role === 'user') {
+        //return `<p><span class="role user">${item.role}: </span><span class="content">${item.content}</span></p>`
+     //s }
+    })
+    console.log(htmlContent);
+    document.getElementById('target').innerHTML = htmlContent.join("");
+      //const json = JSON.parse(response.message.content);
+      //data.push(...json.data);
+      
+  })
+  .catch((error) => {
+      isGenerating = false;
+      console.error(error);
+  });
+
+})
+// add a click event listener to the button that runs the async function;
