@@ -149,6 +149,7 @@ font-family: "Cutive", serif;
   /*top: 80px; /* Abstand vom oberen Rand */
   flex-direction: column;
   align-items: center;
+  top: 20px;
   justify-content: center;
   width: 80px; /* Festgelegte Breite */
   height: 30px;
