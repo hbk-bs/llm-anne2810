@@ -3,11 +3,39 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>llms</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cutive&display=swap" rel="stylesheet">
+	
+	<title>Postcardwriter</title>
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<button id="run">run</button>
+	<h1>Postcard writer</h1>
+	<button id= "about" type="button">About</button>
+    <form >
+		<div class="row">
+
+			<label for="content" >
+				Event
+			</label>
+			<input name="content" type="text" id="content">
+		</div>
+		<div class="row">
+
+			<label for="name">For
+			</label>
+			<input  name="name" type="text" id="name">
+		</div>
+		<div class="row">
+
+			<label for="yourName">From
+			</label>
+			<input  name="yourName" type="text" id="yourName">
+		</div>
+		<button id="submit" type="submit">Send</button>
+    </form>
+	<div id="target"></div>
 	<script type="module" src="index.js"></script>
 </body>
 </html>
